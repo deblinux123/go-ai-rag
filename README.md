@@ -1,5 +1,4 @@
-# go-ai-rag
-## 🚀 Learn Fyne with Go — 14 Day Roadmap
+# 🚀 Learn Fyne with Go — 14 Day Roadmap
 
 A practical 14-day roadmap for learning **Fyne GUI framework with Golang** by building a real AI desktop application.
 
