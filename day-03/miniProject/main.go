@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -9,10 +10,81 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+type Task struct {
+	Name string
+	Done bool
+}
+
 func main() {
 	a := app.New()
 
 	w := a.NewWindow("Fyne Dashboard")
+
+	tasks := []Task{}
+	taskLabe := widget.NewLabel("Tasks: 0")
+	doneLabel := widget.NewLabel("Done: 0")
+	pendingLabel := widget.NewLabel("Pending: 0")
+
+	taskEntry := widget.NewEntry()
+	taskEntry.SetPlaceHolder("Enter task name...")
+
+	taskList := container.NewVBox()
+
+	var refreshTasks func()
+
+	refreshTasks = func() {
+		taskList.Objects = nil
+
+		done := 0
+
+		for i := range tasks {
+			index := i
+
+			check := widget.NewCheck(tasks[index].Name, func(checked bool) {
+				tasks[index].Done = checked
+				refreshTasks()
+			})
+
+			check.SetChecked(tasks[index].Done)
+
+			taskList.Add(check)
+
+			if tasks[index].Done {
+				done++
+			}
+		}
+
+		pending := len(tasks) - done
+
+		taskLabe.SetText(
+			fmt.Sprintf("Tasks: %d", len(tasks)),
+		)
+
+		doneLabel.SetText(
+			fmt.Sprintf("Done: %d", done),
+		)
+
+		pendingLabel.SetText(
+			fmt.Sprintf("Pending: %d", pending),
+		)
+
+		taskList.Refresh()
+	}
+
+	addButton := widget.NewButton("Add Task", func() {
+		if taskEntry.Text == "" {
+			return
+		}
+
+		task := Task{
+			Name: taskEntry.Text,
+			Done: false,
+		}
+
+		tasks = append(tasks, task)
+		taskEntry.SetText("")
+		refreshTasks()
+	})
 
 	// header
 	header := container.NewHBox(
@@ -28,9 +100,6 @@ func main() {
 		widget.NewButton("Settings", func() {}),
 	)
 
-	taskLabe := widget.NewLabel("Tasks: 12")
-	doneLabel := widget.NewLabel("Done: 8")
-	pendingLabel := widget.NewLabel("Pending: 4")
 	// stat
 	stats := container.NewGridWithColumns(
 		3,
@@ -61,9 +130,7 @@ func main() {
 
 		go func() {
 			time.Sleep(3 * time.Second)
-			taskLabe.SetText("Tasks: 15")
-			doneLabel.SetText("Done: 11")
-			pendingLabel.SetText("Pending: 4")
+			refreshTasks()
 
 			loading.Hide()
 			refreshButton.Enable()
@@ -77,6 +144,9 @@ func main() {
 			widget.NewLabel("Dashboard"),
 			dashboardStack,
 			refreshButton,
+			taskEntry,
+			addButton,
+			taskList,
 		),
 	)
 
