@@ -1,6 +1,6 @@
 module github.com/deblinux123/go-ai-rag
 
-go 1.22.2
+go 1.27.1
 
 require fyne.io/fyne/v2 v2.8.1
 
