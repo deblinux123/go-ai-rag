@@ -8,6 +8,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -17,6 +18,15 @@ type AIConfig struct {
 	Temperature  float64
 	Streaming    bool
 	ResponseType string
+}
+
+type myThem struct {
+	fyne.Theme
+	variant fyne.ThemeVariant
+}
+
+func (t *myThem) Color(name fyne.ThemeColorName, _ fyne.ThemeVariant) color.Color {
+	return t.Theme.Color(name, t.variant)
 }
 
 func main() {
@@ -234,8 +244,28 @@ func main() {
 		)
 	}
 
+	currentTheme := &myThem{
+		Theme:   theme.DefaultTheme(),
+		variant: theme.VariantLight,
+	}
+
+	a.Settings().SetTheme(currentTheme)
+
+	var themeButton *widget.Button
+
+	themeButton = widget.NewButton("🌙 Dark Mode", func() {
+		if currentTheme.variant == theme.VariantLight {
+			currentTheme.variant = theme.VariantDark
+			themeButton.SetText("☀️ Light Mode")
+		} else {
+			currentTheme.variant = theme.VariantLight
+			themeButton.SetText("🌙 Dark Mode")
+		}
+	})
+
 	content := container.NewVBox(
 		title,
+		themeButton,
 		widget.NewSeparator(),
 		modelLabel,
 		modelSelect,
