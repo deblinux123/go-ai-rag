@@ -1,8 +1,11 @@
 package main
 
 import (
+	"image/color"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 )
@@ -55,7 +58,7 @@ func main() {
 	}
 
 	previewLabel := widget.NewLabel("Hello " + usernameEntry.Text)
-	passwordValidationLabel := widget.NewLabel("")
+	passwordValidationLabel := canvas.NewText("", color.RGBA{R: 255, G: 0, B: 0, A: 255})
 
 	usernameEntry.OnChanged = func(s string) {
 		previewLabel.SetText("Hello, " + s)
@@ -64,12 +67,32 @@ func main() {
 
 	passwordEntry.OnChanged = func(s string) {
 		if len(s) == 0 {
-			passwordValidationLabel.SetText("Passwrod is required.")
+			passwordValidationLabel.Text = "Password is required."
+			passwordValidationLabel.Color = color.RGBA{
+				R: 255,
+				G: 0,
+				B: 0,
+				A: 255,
+			}
 		} else if len(s) <= 3 {
-			passwordValidationLabel.SetText("Password must be at least 4 characters.")
+			passwordValidationLabel.Text = "Password must be at least 4 characters."
+			passwordValidationLabel.Color = color.RGBA{
+				R: 255,
+				G: 0,
+				B: 0,
+				A: 255,
+			}
 		} else {
-			passwordValidationLabel.SetText("Password looks good!")
+			passwordValidationLabel.Text = "Password looks good!"
+			passwordValidationLabel.Color = color.RGBA{
+				R: 0,
+				G: 180,
+				B: 0,
+				A: 255,
+			}
 		}
+
+		passwordValidationLabel.Refresh()
 
 		validate()
 	}
