@@ -25,6 +25,9 @@ func main() {
 
 	statusLabel := widget.NewLabel("Status: Ready.")
 
+	previewLabel := widget.NewLabel("Hello " + usernameEntry.Text)
+	passwordValidationLabel := canvas.NewText("", color.RGBA{R: 255, G: 0, B: 0, A: 255})
+
 	var submitButton *widget.Button
 	submit := func() {
 		if usernameEntry.Text == "" {
@@ -40,6 +43,10 @@ func main() {
 		statusLabel.SetText("Welcome " + usernameEntry.Text + " !")
 		usernameEntry.SetText("")
 		passwordEntry.SetText("")
+		passwordValidationLabel.Text = ""
+		passwordValidationLabel.Refresh()
+		submitButton.Disable()
+
 	}
 
 	validate := func() {
@@ -56,9 +63,6 @@ func main() {
 	passwordEntry.OnSubmitted = func(s string) {
 		submit()
 	}
-
-	previewLabel := widget.NewLabel("Hello " + usernameEntry.Text)
-	passwordValidationLabel := canvas.NewText("", color.RGBA{R: 255, G: 0, B: 0, A: 255})
 
 	usernameEntry.OnChanged = func(s string) {
 		previewLabel.SetText("Hello, " + s)
