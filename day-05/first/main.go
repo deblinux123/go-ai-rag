@@ -31,6 +31,23 @@ func main() {
 	modelBinding := binding.NewString()
 	modelBinding.Set(state.Model)
 
+	statusBinding := binding.NewString()
+	statusBinding.Set("✓ Synced")
+
+	setUpdating := func() {
+		statusBinding.Set("◌ Updating...")
+	}
+
+	statusLabel := widget.NewLabelWithData(statusBinding)
+
+	modelBinding.AddListener(binding.NewDataListener(func() {
+		setUpdating()
+
+		value, _ := modelBinding.Get()
+		fmt.Println("Model changed:", value)
+		statusBinding.Set("✓ Synced")
+	}))
+
 	// binding the float type
 	temperatureBinding := binding.NewFloat()
 	temperatureBinding.Set(state.Temperature)
@@ -46,11 +63,17 @@ func main() {
 	)
 
 	temperatureBinding.AddListener(binding.NewDataListener(func() {
+		setUpdating()
+
 		value, _ := temperatureBinding.Get()
 
 		temperatureLabelBinding.Set(
 			fmt.Sprintf("%.1f", value),
 		)
+
+		fmt.Println("Temperature changed:", value)
+
+		statusBinding.Set("✓ Synced")
 	}))
 	// slider
 	temperatureSlider := widget.NewSliderWithData(
@@ -86,11 +109,17 @@ func main() {
 	)
 
 	streamingBinding.AddListener(binding.NewDataListener(func() {
+		setUpdating()
+
 		value, _ := streamingBinding.Get()
 
 		streamingLabelBinding.Set(
 			fmt.Sprintf("%t", value),
 		)
+
+		fmt.Println("Streaming changed:", value)
+		statusBinding.Set("✓ Synced")
+
 	}))
 
 	streamingLabel := widget.NewLabelWithData(
@@ -107,6 +136,10 @@ func main() {
 		widget.NewLabel("Streaming:"),
 		streamingChecked,
 		streamingLabel,
+
+		widget.NewSeparator(),
+		widget.NewLabel("AI STATE"),
+		statusLabel,
 	)
 
 	w.Resize(fyne.NewSize(600, 400))
