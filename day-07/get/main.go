@@ -1,8 +1,8 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
 	"fyne.io/fyne/v2"
@@ -10,6 +10,13 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 )
+
+type Post struct {
+	UserId int    `json:"userId"`
+	ID     int    `json:"id"`
+	Title  string `json:"title"`
+	Body   string `json:"body"`
+}
 
 func main() {
 	a := app.New()
@@ -49,7 +56,8 @@ func main() {
 
 			defer resp.Body.Close()
 
-			body, err := io.ReadAll(resp.Body)
+			var post Post
+			err = json.NewDecoder(resp.Body).Decode(&post)
 
 			if err != nil {
 				fyne.Do(func() {
@@ -60,7 +68,13 @@ func main() {
 				return
 			}
 
-			result := string(body)
+			result := fmt.Sprintf(
+				"User ID: %d\n\nID: %d\n\nTitle: %s\n\nBody: %s\n\n",
+				post.UserId,
+				post.ID,
+				post.Title,
+				post.Body,
+			)
 
 			fyne.Do(func() {
 				status.SetText(
