@@ -91,4 +91,32 @@ func main() {
 	fmt.Println("Found Chat:")
 	fmt.Printf("%d : %s\n", newId, title)
 
+	newResult, err := db.Exec(
+		"UPDATE chats SET title = ? WHERE id = ?",
+		"Learning SQLITE",
+		4,
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	affected, err := newResult.RowsAffected()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Rows Updated:", affected)
+
+	err = db.QueryRow(
+		"SELECT id, title FROM chats WHERE id = ?",
+		4,
+	).Scan(&newId, &title)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Updated Chat:", newId, title)
 }
