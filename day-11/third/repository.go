@@ -20,7 +20,28 @@ func (r *ChatRepository) CreateTable() error {
 		)
 	`)
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	_, err = r.db.Exec(
+		`
+		CREATE TABLE IF NOT EXISTS messages (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			chat_id INTEGER NOT NULL,
+			role TEXT NOT NULL,
+			content TEXT NOT NULL,
+			FOREIGN KEY (chat_id)
+				REFERENCES chats(id)
+				ON DELETE CASCADE	
+		)
+		`)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *ChatRepository) CreateChat(title string) (int64, error) {
@@ -40,6 +61,65 @@ func (r *ChatRepository) CreateChat(title string) (int64, error) {
 	}
 
 	return id, nil
+}
+
+func (r *ChatRepository) CreateMessage(chat_id int, role string, content string) (int64, error) {
+	result, err := r.db.Exec(
+		"INSERT INTO messages (chat_id, role, content) VALUES (?, ?, ?)",
+		chat_id,
+		role,
+		content,
+	)
+
+	if err != nil {
+		return 0, err
+	}
+
+	id, err := result.LastInsertId()
+
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}
+
+func (r *ChatRepository) GetMessages(chat_id int) ([]ChatMessage, error) {
+	rows, err := r.db.Query(
+		"SELECT id, chat_id, role, content FROM messages WHERE chat_id = ?",
+		chat_id,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var messages []ChatMessage
+
+	for rows.Next() {
+		var message ChatMessage
+
+		err := rows.Scan(
+			&message.ID,
+			&message.ChatID,
+			&message.Role,
+			&message.Content,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		messages = append(messages, message)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return messages, nil
 }
 
 func (r *ChatRepository) GetChats() ([]Chat, error) {
@@ -109,6 +189,15 @@ func (r *ChatRepository) DeleteChat(id int) error {
 	_, err := r.db.Exec(
 		"DELETE FROM chats WHERE id = ?",
 		id,
+	)
+
+	return err
+}
+
+func (r *ChatRepository) DeletetMessages(chat_id int) error {
+	_, err := r.db.Exec(
+		"DELETE FROM messages WHERE chat_id = ?",
+		chat_id,
 	)
 
 	return err

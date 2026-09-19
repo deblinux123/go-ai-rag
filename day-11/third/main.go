@@ -29,21 +29,67 @@ func main() {
 
 	fmt.Println("Created Chat with ID:", id)
 
-	id, err = repo.CreateChat("Learning AI Desktop application")
+	// id, err = repo.CreateChat("Learning AI Desktop application")
+
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// fmt.Println("Created Chat with ID:", id)
+
+	// id, err = repo.CreateChat("This is the best way to leatrn new Thing")
+
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// fmt.Println("Created Chat with ID:", id)
+
+	_, err = repo.CreateMessage(int(id), "user", "hello there")
 
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("Created Chat with ID:", id)
-
-	id, err = repo.CreateChat("This is the best way to leatrn new Thing")
+	_, err = repo.CreateMessage(int(id), "assistant", "Hello! How can i help you?")
 
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("Created Chat with ID:", id)
+	_, err = repo.CreateMessage(
+		int(id),
+		"user",
+		"Explain goroutines",
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = repo.CreateMessage(
+		int(id),
+		"assistant",
+		"Goroutines are lightweight concurrent functions in Go.",
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Messages created")
+
+	fmt.Print("\n--- Chat Messages ---\n")
+
+	messages, err := repo.GetMessages(int(id))
+
+	if err != nil {
+		panic(err)
+	}
+
+	for _, message := range messages {
+		fmt.Printf("[%s] %s\n", message.Role, message.Content)
+	}
 
 	fmt.Print("\n--- All Chats ---\n")
 
@@ -109,5 +155,15 @@ func main() {
 			chat.Title,
 		)
 	}
+
+	fmt.Print("---\n Messages After Chat Delete ---\n")
+
+	messages, err = repo.GetMessages(int(id))
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Number of messages:", len(messages))
 
 }

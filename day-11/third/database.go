@@ -19,6 +19,13 @@ func OpenDatabase() (*sql.DB, error) {
 		return nil, err
 	}
 
+	_, err = db.Exec("PRAGMA foreign_keys = on")
+
+	if err != nil {
+		db.Close()
+		return nil, err
+	}
+
 	fmt.Println("Database connected")
 
 	return db, nil
