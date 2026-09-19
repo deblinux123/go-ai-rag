@@ -119,4 +119,22 @@ func main() {
 	}
 
 	fmt.Println("Updated Chat:", newId, title)
+
+	dlResult, err := db.Exec(
+		"DELETE FROM chats WHERE id = ?",
+		6,
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	affectedDL, err := dlResult.RowsAffected()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Rows deleted: ", affectedDL)
+
 }
