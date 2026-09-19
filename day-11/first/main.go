@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	_ "modernc.org/sqlite"
 )
@@ -10,10 +11,16 @@ import (
 func main() {
 	db, err := sql.Open("sqlite", "chat.db")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	defer db.Close()
 
-	fmt.Println("Database connected!")
+	err = db.Ping()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Database connection successful!")
 }
