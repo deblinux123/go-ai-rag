@@ -13,53 +13,53 @@ type SQLite struct {
 
 func NewSQLite(path string) (*SQLite, error) {
 	db, err := sql.Open("sqlite", path)
-
 	if err != nil {
-		return nil, fmt.Errorf("Open database: %w", err)
+		return nil, fmt.Errorf("open database: %w", err)
 	}
 
 	if err := db.Ping(); err != nil {
 		db.Close()
-		return nil, fmt.Errorf("Ping database: %w", err)
+		return nil, fmt.Errorf("ping database: %w", err)
 	}
 
-	if _, err := db.Exec("PRAGMA foreign_key = ON"); err != nil {
+	if _, err := db.Exec("PRAGMA foreign_keys = ON"); err != nil {
 		db.Close()
-		return nil, fmt.Errorf("Enable foreign keys: %w", err)
+		return nil, fmt.Errorf("enable foreign keys: %w", err)
 	}
 
 	sqlite := &SQLite{
 		DB: db,
 	}
 
-	if err := sqlite.createTable(); err != nil {
+	if err := sqlite.createTables(); err != nil {
 		db.Close()
-		return nil, fmt.Errorf("Create tables: %w", err)
+		return nil, fmt.Errorf("create tables: %w", err)
 	}
 
 	return sqlite, nil
 }
 
-func (s *SQLite) createTable() error {
+func (s *SQLite) createTables() error {
 	_, err := s.DB.Exec(`
-	CREATE TABLE IF NOT EXISTS chats(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		title TEXT NOT NULL
-	);
+		CREATE TABLE IF NOT EXISTS chats (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			title TEXT NOT NULL
+		);
 
-	CREATE TABLE IF NOT EXISTS messages (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		chat_id INTEGER NOT NULL,
-		role TEXT NOT NULL,
-		content TEXT NO NULL,
-		FOREIGN KEY (chat_id)
-			REFERENCES chats(id)
-			ON DELETE CASCADE
-	);
+		CREATE TABLE IF NOT EXISTS messages (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			chat_id INTEGER NOT NULL,
+			role TEXT NOT NULL,
+			content TEXT NOT NULL,
+			FOREIGN KEY (chat_id)
+				REFERENCES chats(id)
+				ON DELETE CASCADE
+		);
 	`)
 
 	return err
 }
+
 func (s *SQLite) Close() error {
 	return s.DB.Close()
 }

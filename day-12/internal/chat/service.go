@@ -17,7 +17,7 @@ func NewService(db *sql.DB) *Service {
 
 func (s *Service) CreateChat(title string) (int64, error) {
 	result, err := s.db.Exec(
-		"INSERT INTO chat (title) VALUES (?)",
+		"INSERT INTO chats (title) VALUES (?)",
 		title,
 	)
 

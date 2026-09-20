@@ -3,6 +3,7 @@ package ui
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
 	"github.com/deblinux123/go-ai-rag/day-12/internal/ai"
 	"github.com/deblinux123/go-ai-rag/day-12/internal/chat"
 )
@@ -49,4 +50,15 @@ func (a *App) Run() {
 	a.window.SetContent(content)
 
 	a.window.ShowAndRun()
+}
+
+func (a *App) ShowError(err error) {
+	dialog := widget.NewLabel(err.Error())
+
+	w := fyne.CurrentApp().NewWindow("Error")
+	w.Resize(fyne.NewSize(500, 150))
+	w.SetContent(
+		container.NewPadded(dialog),
+	)
+	w.Show()
 }
