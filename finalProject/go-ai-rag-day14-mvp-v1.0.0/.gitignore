@@ -1,0 +1,21 @@
+# Build output
+dist/
+*.exe
+*.app
+*.tar.gz
+
+# Local databases and settings
+*.db
+*.db-shm
+*.db-wal
+settings.json
+
+# Go
+bin/
+vendor/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store

@@ -1,0 +1,14 @@
+Website = "https://github.com/deblinux123/go-ai-rag"
+
+[Details]
+Icon = "Icon.png"
+Name = "Go AI RAG"
+ID = "com.deblinux123.goairag"
+Version = "1.0.0"
+Build = 1
+
+[LinuxAndBSD]
+GenericName = "Local AI Chat"
+Categories = ["Utility", "Development"]
+Comment = "A modern desktop chat client for Ollama"
+Keywords = ["AI", "Ollama", "LLM", "Chat", "Local AI"]

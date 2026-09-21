@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.27.1"
+          cache: true
+
+      - name: Install Fyne Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y             gcc             libgl1-mesa-dev             xorg-dev             libwayland-dev             libxkbcommon-dev
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Install Fyne CLI
+        run: go install fyne.io/tools/cmd/fyne@latest
+
+      - name: Build Linux binary
+        run: |
+          mkdir -p dist
+          go build             -trimpath             -ldflags="-s -w"             -o dist/go-ai-rag-linux-amd64             ./cmd/app
+
+      - name: Package Linux desktop app
+        working-directory: cmd/app
+        run: |
+          "$(go env GOPATH)/bin/fyne" package             --os linux             --release
+          mkdir -p ../../dist/package
+          mv ./*.tar.gz ../../dist/package/go-ai-rag-linux-amd64.tar.gz
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}"             dist/go-ai-rag-linux-amd64             dist/package/go-ai-rag-linux-amd64.tar.gz             --title "Go AI RAG ${GITHUB_REF_NAME}"             --generate-notes
